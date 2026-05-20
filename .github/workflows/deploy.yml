@@ -1,4 +1,4 @@
-name: Déploiement vers Vercel
+name: Déploiement vers Vercel après exécution des tests
 
 on:
   push:
@@ -6,16 +6,34 @@ on:
       - main
 
 jobs:
-  deploy:
+  test:
     runs-on: ubuntu-latest
     steps:
-      - name: Récupération du code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du code
         uses: actions/checkout@v3
 
       - name: Installation de Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '22'        # Adaptez à la version de votre projet
+          node-version: '22'
           cache: 'npm'
 
       - name: Installation des dépendances
@@ -27,11 +45,6 @@ jobs:
       - name: Déploiement sur Vercel
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           npm install -g vercel
-          vercel pull --yes --environment=production --token=$VERCEL_TOKEN --scope=$VERCEL_ORG_ID
-          vercel build --prod --token=$VERCEL_TOKEN --scope=$VERCEL_ORG_ID
-          vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --scope=$VERCEL_ORG_ID
-
+          vercel --prod --token $VERCEL_TOKEN --yes
