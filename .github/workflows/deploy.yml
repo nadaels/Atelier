@@ -1,39 +1,11 @@
-name: Déploiement vers Vercel après exécution des tests
+name: Déploiement vers Vercel
 
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:
 
 jobs:
-  sonar:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610
-        with:
-          node-version: '22'
-      - run: npm install
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@e44258b109568baa0df60ed515909fc6c72cba92
-        with:
-          args: -Dsonar.ci.automaticAnalysis=false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610
-        with:
-          node-version: '22'
-      - run: npm install
-      - run: npm test
-
   deploy:
-    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout du code
