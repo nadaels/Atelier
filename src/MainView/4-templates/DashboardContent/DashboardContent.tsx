@@ -7,14 +7,12 @@ import AddForm from "../../../AddTODO/4-template/AddForm";
 const DashboardContent = (props: DashboardContentProps) => {
   const { selectedItemId } = props;
   let content;
-  switch (selectedItemId) {
-    case "add":
-      content = <AddForm />;
-      break;
-    default:
-      content = <></>;
-      break;
-  }
+
+  if (selectedItemId === "add") {
+    content = <AddForm />;
+} else {
+    content = <></>;
+}
 
   return (
     <Box
