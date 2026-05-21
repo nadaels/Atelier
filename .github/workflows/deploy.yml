@@ -2,10 +2,8 @@ name: Déploiement vers Vercel après exécution des tests
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   workflow_dispatch:
-
 
 jobs:
   sonar:
@@ -22,24 +20,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-
-jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610
         with:
           node-version: '22'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run tests
-        run: npm test
+      - run: npm install
+      - run: npm test
 
   deploy:
     needs: test
@@ -47,19 +36,15 @@ jobs:
     steps:
       - name: Checkout du code
         uses: actions/checkout@v3
-
       - name: Installation de Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610
         with:
           node-version: '22'
           cache: 'npm'
-
       - name: Installation des dépendances
         run: npm install
-
       - name: Build de l'application
         run: npm run build
-
       - name: Déploiement sur Vercel
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
